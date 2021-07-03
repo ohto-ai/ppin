@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file>pin.png</file>
+        <file>C_zerotwo_stand.png</file>
+    </qresource>
+</RCC>
