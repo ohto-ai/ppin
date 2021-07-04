@@ -28,8 +28,11 @@ int main(int argc,  char**argv)
 		{
 			clipboardUpdated = true;
 		});
+	std::function<TransparentMainWindow* (QString)> createPinWindow;
+	std::function<TransparentMainWindow* (QImage)> createPinWindowByImage;
 	
-	std::function<TransparentMainWindow*(QString)> createPinWindow = [&](QString fileName)->TransparentMainWindow*
+
+	createPinWindow = [&](QString fileName)->TransparentMainWindow*
 	{
 		auto w = new TransparentMainWindow(&mainWindow);
 		w->show();
@@ -38,15 +41,17 @@ int main(int argc,  char**argv)
 			w->deleteLater();
 			return nullptr;
 		}
-		QObject::connect(w, &TransparentMainWindow::cloneWindow, createPinWindow);
+		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(QString)const>(&TransparentMainWindow::cloneWindow), createPinWindow);
+		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(QImage)const>(&TransparentMainWindow::cloneWindow), createPinWindowByImage);
 		return w;
 	};
-	std::function<TransparentMainWindow*(QImage)> createPinWindowByImage = [&](QImage image)
+	createPinWindowByImage = [&](QImage image)
 	{
 		auto w = new TransparentMainWindow(&mainWindow);
 		w->show();
 		w->loadMovie(image);
-		QObject::connect(w, &TransparentMainWindow::cloneWindow, createPinWindow);
+		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(QString)const>(&TransparentMainWindow::cloneWindow), createPinWindow);
+		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(QImage)const>(&TransparentMainWindow::cloneWindow), createPinWindowByImage);
 		return w;
 	};
 	

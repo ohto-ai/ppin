@@ -47,16 +47,15 @@ public:
 		auto loadMovieAC = new QAction(style()->standardIcon(QStyle::StandardPixmap::SP_DialogOpenButton), tr("&Open Image"), this);
 		loadMovieAC->setShortcut(QKeySequence{ "Ctrl+O" });
 		
-		auto lockPositionAC = new QAction(tr("&Lock Position"), this);
+		auto lockPositionAC = new QAction(tr("Lock &Position"), this);
 		lockPositionAC->setCheckable(true);
-		lockPositionAC->setShortcut(QKeySequence{ "Ctrl+L" });
+		lockPositionAC->setShortcut(QKeySequence{ "Ctrl+P" });
 		
 		auto moveCenterAC = new QAction(tr("&Move Center"), this);
 		moveCenterAC->setShortcut(QKeySequence{ "Ctrl+M" });
-		
+
 		auto closeAC = new QAction(style()->standardIcon(QStyle::StandardPixmap::SP_TitleBarCloseButton), tr("&Close"), this);
 		closeAC->setShortcut(QKeySequence{ "Alt+F4" });
-
 
 		auto cloneWindowAC = new QAction(tr("Clone &Window"), this);
 		cloneWindowAC->setShortcut(QKeySequence{ "Alt+W" });
@@ -91,9 +90,16 @@ public:
 		
 		connect(cloneWindowAC, &QAction::triggered, [=]
 			{
+				auto fileName = windowMovie.fileName();
+			if(fileName.isEmpty())
+			{
+				emit cloneWindow(QImage::fromData(imageByteArray));
+			}
+			else
+			{
 				emit cloneWindow(windowMovie.fileName());
+			}
 			});
-		
 		addAction(showAntLineAC);	
 		addAction(loadMovieAC);
 		addAction(moveCenterAC);
@@ -152,9 +158,11 @@ public:
 	bool loadMovie(QImage image)
 	{
 		deviceBuffer.close();
-		deviceBuffer.open(QIODevice::ReadWrite);
+		deviceBuffer.open(QIODevice::WriteOnly);
 		image.save(&deviceBuffer, "png");
-		deviceBuffer.seek(0);
+		deviceBuffer.close();
+		
+		deviceBuffer.open(QIODevice::ReadOnly);
 		windowMovie.setDevice(&deviceBuffer);
 		windowMovie.start();
 		setFixedSize(windowMovie.scaledSize());
@@ -214,6 +222,7 @@ public:
 	
 signals:
 	void cloneWindow(QString) const;
+	void cloneWindow(QImage) const;
 private:
 	bool onDragging;		// 是否正在拖动
 	QPoint startPosition;	// 拖动开始前的鼠标位置
