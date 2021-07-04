@@ -17,6 +17,8 @@ int main(int argc,  char**argv)
 
 	auto appIcon = QIcon(":/icon/pin.png");
 
+	QMainWindow mainWindow;
+	
 	qApp->setWindowIcon(appIcon);
 	QSystemTrayIcon systemTray;
 	systemTray.setIcon(appIcon);
@@ -29,7 +31,7 @@ int main(int argc,  char**argv)
 	
 	std::function<TransparentMainWindow*(QString)> createPinWindow = [&](QString fileName)->TransparentMainWindow*
 	{
-		auto w = new TransparentMainWindow();
+		auto w = new TransparentMainWindow(&mainWindow);
 		w->show();
 		if(!w->loadMovie(fileName))
 		{
@@ -41,7 +43,7 @@ int main(int argc,  char**argv)
 	};
 	std::function<TransparentMainWindow*(QImage)> createPinWindowByImage = [&](QImage image)
 	{
-		auto w = new TransparentMainWindow();
+		auto w = new TransparentMainWindow(&mainWindow);
 		w->show();
 		w->loadMovie(image);
 		QObject::connect(w, &TransparentMainWindow::cloneWindow, createPinWindow);
@@ -80,17 +82,41 @@ int main(int argc,  char**argv)
 
 
 	QMenu menu;
-	menu.addAction("&Load", [&]
+	menu.addAction("&Open", [&]
 		{
-			auto fileName = QFileDialog::getOpenFileName(nullptr, "Load image", ""
+			if (auto fileName = QFileDialog::getOpenFileName(nullptr, "Load image", ""
 				, "All Support Image Files(*.bmp;*.jpg;*.jpeg;*.png;*.gif);;Static Images Files(*.bmp;*.jpg;*.jpeg;*.png);;Dynamic Image Files(*.gif);;All Files(*.*)");
-			if (!fileName.isEmpty())
-			{
-				auto w = new TransparentMainWindow();
-				w->show();
-				w->loadMovie(fileName);
+				!fileName.isEmpty())
+				createPinWindow(fileName);
+		});
 
-				QObject::connect(w, &TransparentMainWindow::cloneWindow, createPinWindow);
+	menu.addAction("&From Clipboard", [&]
+		{
+
+			const auto mimeData = qApp->clipboard()->mimeData();
+
+			bool success = false;
+			if (mimeData->hasUrls())
+				for (auto url : mimeData->urls())
+					if (createPinWindow(url.toLocalFile()) != nullptr)
+						success = true;
+			if (!success && mimeData->hasImage())
+			{
+				createPinWindowByImage(qvariant_cast<QImage>(mimeData->imageData()));
+			}
+		});
+
+
+	menu.addAction("&Close All", [&]
+		{
+			auto& children = mainWindow.children();
+
+			for (auto children : children)
+			{
+				if (auto window = dynamic_cast<TransparentMainWindow*>(children))
+				{
+					window->close();
+				}
 			}
 		});
 	
