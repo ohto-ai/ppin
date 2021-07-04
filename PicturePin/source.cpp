@@ -22,16 +22,28 @@ int main(int argc,  char**argv)
 	systemTray.setIcon(appIcon);
 
 	std::atomic<bool> clipboardUpdated{ true };
-	QObject::connect(qApp->clipboard(), &QClipboard::changed, [&]
+	QObject::connect(qApp->clipboard(), &QClipboard::dataChanged, [&]
 		{
 			clipboardUpdated = true;
 		});
 	
-	std::function<TransparentMainWindow*(QString)> createPinWindow = [&](QString fileName)
+	std::function<TransparentMainWindow*(QString)> createPinWindow = [&](QString fileName)->TransparentMainWindow*
 	{
 		auto w = new TransparentMainWindow();
 		w->show();
-		w->loadMovie(fileName);
+		if(!w->loadMovie(fileName))
+		{
+			w->deleteLater();
+			return nullptr;
+		}
+		QObject::connect(w, &TransparentMainWindow::cloneWindow, createPinWindow);
+		return w;
+	};
+	std::function<TransparentMainWindow*(QImage)> createPinWindowByImage = [&](QImage image)
+	{
+		auto w = new TransparentMainWindow();
+		w->show();
+		w->loadMovie(image);
 		QObject::connect(w, &TransparentMainWindow::cloneWindow, createPinWindow);
 		return w;
 	};
@@ -46,22 +58,24 @@ int main(int argc,  char**argv)
 			parser.addOption(inputImageOption);
 			if (parser.parse(commandLine.split(' ')) && parser.isSet(inputImageOption))
 				createPinWindow(parser.value(inputImageOption));
-			else
+			else if (clipboardUpdated)
 			{
-				// todo 检测剪切板中的图像数据
+				clipboardUpdated = false;
+				
 				const auto mimeData = qApp->clipboard()->mimeData();
+				
+				bool success = false;
 				if (mimeData->hasUrls())
+					for (auto url : mimeData->urls())
+						if (createPinWindow(url.toLocalFile()) != nullptr)
+							success = true;
+				if (!success && mimeData->hasImage())
 				{
-					if (clipboardUpdated)
-					{
-						clipboardUpdated = false;
-						for (auto url : mimeData->urls())
-							createPinWindow(url.toLocalFile());
-					}
+					createPinWindowByImage(qvariant_cast<QImage>(mimeData->imageData()));
 				}
-				else
-					systemTray.showMessage(QObject::tr("Invalid parameter"), commandLine, appIcon);
 			}
+			else
+				systemTray.showMessage(QObject::tr("Invalid parameter"), commandLine, appIcon);
 		});
 
 

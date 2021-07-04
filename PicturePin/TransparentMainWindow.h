@@ -25,6 +25,9 @@ public:
 		setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
 		setAttribute(Qt::WA_TranslucentBackground);
 		mainLabel.setAlignment(Qt::AlignCenter);
+		mainLabel.setMovie(&windowMovie);
+
+		windowMovie.setCacheMode(QMovie::CacheAll);
 
 		dashes = patternLength;
 		spaces = patternLength;
@@ -88,7 +91,7 @@ public:
 		
 		connect(cloneWindowAC, &QAction::triggered, [=]
 			{
-				emit cloneWindow(windowMovie->fileName());
+				emit cloneWindow(windowMovie.fileName());
 			});
 		
 		addAction(showAntLineAC);	
@@ -146,21 +149,31 @@ public:
 		}
 	}
 
-	void loadMovie(QString fileName)
+	bool loadMovie(QImage image)
+	{
+		deviceBuffer.close();
+		deviceBuffer.open(QIODevice::ReadWrite);
+		image.save(&deviceBuffer, "png");
+		deviceBuffer.seek(0);
+		windowMovie.setDevice(&deviceBuffer);
+		windowMovie.start();
+		setFixedSize(windowMovie.scaledSize());
+		move((QApplication::primaryScreen()->size().width() - width()) / 2, (QApplication::primaryScreen()->size().height() - height()) / 2);
+		return true;
+	}
+	
+	bool loadMovie(QString fileName)
 	{
 		if (fileName.isEmpty())
-			return;
-		const auto movie = new QMovie(fileName, QByteArray(), this);
-		if (!movie->isValid())
-			return;
-
-		windowMovie->deleteLater();
-		windowMovie = movie;
-		windowMovie->setCacheMode(QMovie::CacheAll);
-		mainLabel.setMovie(windowMovie);
-		windowMovie->start();
-		setFixedSize(windowMovie->scaledSize());
+			return false;
+		if (const QMovie movie(fileName); !movie.isValid())
+			return false;
+		windowMovie.setFileName(fileName);
+		windowMovie.start();
+		setFixedSize(windowMovie.scaledSize());
 		move((QApplication::primaryScreen()->size().width() - width()) / 2, (QApplication::primaryScreen()->size().height() - height()) / 2);
+
+		return true;
 	}
 	
 	virtual void mousePressEvent(QMouseEvent* event) override
@@ -208,7 +221,7 @@ private:
 
 	bool isPositionLocked{ false };
 	QLabel mainLabel;
-	QMovie* windowMovie{ nullptr };
+	QMovie windowMovie{ this };
 
 	bool isBorderShown{ false };
 	QTimer* repaintTimer;
@@ -216,5 +229,8 @@ private:
 	int spaces;
 	const int patternLength;
 	QVector<qreal> dashPattern;
+
+	QByteArray imageByteArray;
+	QBuffer deviceBuffer{ &imageByteArray, this };
 };
 
