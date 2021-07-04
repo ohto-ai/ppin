@@ -19,9 +19,7 @@ class TransparentMainWindow :
 public:
 	TransparentMainWindow(QWidget* parent = nullptr)
 		: QMainWindow{parent}
-		, patternLength{ 4 }
 	{
-		setWindowIcon(QIcon(":/icon/pin.png"));
 		setCentralWidget(&mainLabel);
 		setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
 		setAttribute(Qt::WA_TranslucentBackground);
@@ -29,36 +27,21 @@ public:
 		mainLabel.setMovie(&windowMovie);
 
 		windowMovie.setCacheMode(QMovie::CacheAll);
-
-		dashes = patternLength;
-		spaces = patternLength;
-		dashPattern.clear();
-		for (int i = 0; i < 4; ++i) {
-			dashPattern << patternLength;
-		}
-
-		repaintTimer = new QTimer();
-		repaintTimer->setInterval(100);
-		connect(repaintTimer, &QTimer::timeout, this, &TransparentMainWindow::updateAntLineValue);
-		
-		auto showAntLineAC = new QAction(tr("[&B]order"), this);
-		showAntLineAC->setCheckable(true);
-		showAntLineAC->setShortcut(QKeySequence{ "Ctrl+B" });
-		
-		auto loadMovieAC = new QAction(style()->standardIcon(QStyle::StandardPixmap::SP_DialogOpenButton), tr("[&O]pen Image"), this);
+				
+		auto loadMovieAC = new QAction(QIcon(":/icon/res/button/folder.png"), tr("[&O]pen Image"), this);
 		loadMovieAC->setShortcut(QKeySequence{ "Ctrl+O" });
 		
-		auto lockPositionAC = new QAction(tr("Lock [&P]osition"), this);
+		auto lockPositionAC = new QAction(QIcon(":/icon/res/button/lock.png"), tr("Lock [&P]osition"), this);
 		lockPositionAC->setCheckable(true);
 		lockPositionAC->setShortcut(QKeySequence{ "Ctrl+P" });
 		
-		auto moveCenterAC = new QAction(tr("[&M]ove Center"), this);
+		auto moveCenterAC = new QAction(QIcon(":/icon/res/button/cross.png"), tr("[&M]ove Center"), this);
 		moveCenterAC->setShortcut(QKeySequence{ "Ctrl+M" });
 
-		auto closeAC = new QAction(style()->standardIcon(QStyle::StandardPixmap::SP_TitleBarCloseButton), tr("Close"), this);
+		auto closeAC = new QAction(QIcon(":/icon/res/button/close.png"), tr("Close"), this);
 		closeAC->setShortcut(QKeySequence{ "Alt+F4" });
 
-		auto cloneWindowAC = new QAction(tr("Clone [&W]indow"), this);
+		auto cloneWindowAC = new QAction(QIcon(":/icon/res/button/clone.png"), tr("Clone [&W]indow"), this);
 		cloneWindowAC->setShortcut(QKeySequence{ "Alt+W" });
 					
 		connect(closeAC, &QAction::triggered, this, &QMainWindow::close);
@@ -73,17 +56,7 @@ public:
 			{
 				move((QApplication::primaryScreen()->size().width() - width()) / 2, (QApplication::primaryScreen()->size().height() - height()) / 2);
 			});
-		
-		connect(showAntLineAC, &QAction::triggered, [=]
-			{
-				isBorderShown = showAntLineAC->isChecked();
-				if (isBorderShown)
-					repaintTimer->start();
-				else
-					repaintTimer->stop();
-				update();
-			});
-		
+				
 		connect(lockPositionAC, &QAction::triggered, [=]
 			{
 				isPositionLocked = lockPositionAC->isChecked();
@@ -93,7 +66,7 @@ public:
 			{
 				emit cloneWindow(imageByteArray);
 			});
-		addAction(showAntLineAC);	
+		
 		addAction(loadMovieAC);
 		addAction(moveCenterAC);
 		addAction(lockPositionAC);
@@ -102,52 +75,6 @@ public:
 		setContextMenuPolicy(Qt::ContextMenuPolicy::ActionsContextMenu);
 
 		setAcceptDrops(true);
-	}
-
-	void updateAntLineValue()
-	{
-		if (isBorderShown)
-		{
-			//当蚂蚁线走到末尾,则重新赋值
-			if (dashes == patternLength && spaces == patternLength) {
-				dashes = 0;
-				spaces = 0;
-			}
-
-			if (dashes == 0 && spaces < patternLength) {
-				++spaces;
-			}
-			else if (spaces == patternLength && dashes < patternLength) {
-				++dashes;
-			}
-
-			//每次只需要将前面两个长度更新就行
-			dashPattern[0] = dashes;
-			dashPattern[1] = spaces;
-
-			update(0, 0, mainLabel.width(), 2);
-			update(0, mainLabel.height() - 3, mainLabel.width(), 2);
-			update(0, 0, 2, mainLabel.height());
-			update(mainLabel.width() - 3, 0, 2, mainLabel.height());
-		}
-	}
-	
-	void paintEvent(QPaintEvent* event) override
-	{
-		if (isBorderShown)
-		{
-			QPainter painter(this);
-			painter.setRenderHints(QPainter::Antialiasing);
-
-			QPen pen;
-			pen.setWidth(2);
-			pen.setColor(Qt::white);
-			pen.setDashPattern(dashPattern);
-			painter.setPen(pen);
-			painter.drawRect(mainLabel.rect().adjusted(0, 0, -1, -1));
-
-			auto rect = mainLabel.rect().width();
-		}
 	}
 
 	void doLoadMovie()
@@ -276,13 +203,6 @@ private:
 	bool isPositionLocked{ false };
 	QLabel mainLabel;
 	QMovie windowMovie{ this };
-
-	bool isBorderShown{ false };
-	QTimer* repaintTimer;
-	int dashes;
-	int spaces;
-	const int patternLength;
-	QVector<qreal> dashPattern;
 
 	QByteArray imageByteArray;
 	QBuffer deviceBuffer{ &imageByteArray, this };

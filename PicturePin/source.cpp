@@ -15,7 +15,7 @@ int main(int argc,  char**argv)
 	if (a.instanceRunning())
 		return 0;
 
-	auto appIcon = QIcon(":/icon/pin.png");
+	auto appIcon = QIcon(":/icon/MainIcon");
 
 	QMainWindow mainWindow;
 	
@@ -33,7 +33,6 @@ int main(int argc,  char**argv)
 	std::function<TransparentMainWindow* (QImage)> createPinWindowByImage;
 	std::function<void (const QMimeData*)> createPinWindowByMimeData;
 	
-
 	createPinWindowByMimeData = [&](const QMimeData* mimeData)
 	{
 		bool success = false;
@@ -86,29 +85,43 @@ int main(int argc,  char**argv)
 	};
 	
 
+	auto parserCommandLineToCreateWindow = [&](QStringList commandLine)
+	{
+		const QCommandLineOption inputImageOption("i", QObject::tr("Input Image File Path"), "ImagePath");
+		QCommandLineParser parser;
+		parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
+		parser.setOptionsAfterPositionalArgumentsMode(QCommandLineParser::ParseAsPositionalArguments);
+		parser.addOption(inputImageOption);
+		parser.process(commandLine);
+		if (parser.isSet(inputImageOption))
+		{
+			createPinWindowByFile(parser.value(inputImageOption));
+			return true;
+		}
+		return false;
+	};
+
+	
 	QObject::connect(&a, &SingleApplication::newInstanceStartup, [&](QStringList commandLine)
 		{
-			const QCommandLineOption inputImageOption("i", QObject::tr("Input Image File Path"), "input");
-			QCommandLineParser parser;
-			parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
-			parser.setOptionsAfterPositionalArgumentsMode(QCommandLineParser::ParseAsPositionalArguments);
-			parser.addOption(inputImageOption);
-			if (parser.parse(commandLine) && parser.isSet(inputImageOption))
-				createPinWindowByFile(parser.value(inputImageOption));
-			else if (clipboardUpdated)
+			if (parserCommandLineToCreateWindow(commandLine))
+				return;
+		
+			if (clipboardUpdated)
 			{
 				clipboardUpdated = false;
 				createPinWindowByMimeData(qApp->clipboard()->mimeData());
 			}
 			else
 			{
-				systemTray.showMessage(QObject::tr("Invalid parameter"), commandLine.join(' '), appIcon);
+				systemTray.showMessage(QObject::tr("Invalid parameter"), commandLine.join(' '), QIcon(":/icon/res/button/error.png"));
 			}
 		});
 
 
-	QMenu menu;
-	menu.addAction("&Open", [&]
+	QMenu systemTrayMenu;
+	
+	systemTrayMenu.addAction(QIcon(":/icon/res/button/folder.png"), "&Open", [&]
 		{
 			if (auto fileName = QFileDialog::getOpenFileName(nullptr, "Load image", ""
 				, "All Support Image Files(*.bmp;*.jpg;*.jpeg;*.png;*.gif);;Static Images Files(*.bmp;*.jpg;*.jpeg;*.png);;Dynamic Image Files(*.gif);;All Files(*.*)");
@@ -116,13 +129,12 @@ int main(int argc,  char**argv)
 				createPinWindowByFile(fileName);
 		});
 
-	menu.addAction("&From Clipboard", [&]
+	systemTrayMenu.addAction(QIcon(":/icon/res/button/clipboard.png"), "&From Clipboard", [&]
 		{
 			createPinWindowByMimeData(qApp->clipboard()->mimeData());
 		});
 
-
-	menu.addAction("&Close All", [&]
+	systemTrayMenu.addAction(QIcon(":/icon/res/button/close.png"), "&Close All", [&]
 		{
 			auto& children = mainWindow.children();
 
@@ -135,32 +147,24 @@ int main(int argc,  char**argv)
 			}
 		});
 	
-	menu.addAction("&About", [=]
+	systemTrayMenu.addAction(QIcon(":/icon/res/button/about.png"), "&About", [=]
 		{
 			QDesktopServices::openUrl(QUrl("https://github.com/Ohto-Ai"));
 		});
 	
-	menu.addAction(menu.style()->standardIcon(QStyle::StandardPixmap::SP_MessageBoxCritical), "&Quit", [=]
+	systemTrayMenu.addAction(QIcon(":/icon/res/button/quit.png"), "&Quit", [=]
 		{
 			if (QMessageBox::question(nullptr, QObject::tr("Quit"), QObject::tr("Quit the application?")) == QMessageBox::Yes)
 				qApp->quit();
 		});
 	
-	systemTray.setContextMenu(&menu);
+	systemTray.setContextMenu(&systemTrayMenu);
+
+	if (!parserCommandLineToCreateWindow(SingleApplication::arguments()))
+		createPinWindowByFile(":/icon/Demo");
 	
 	systemTray.show();
 
-
-	QCommandLineParser parser;
-	parser.addHelpOption();
-	parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
-	parser.setOptionsAfterPositionalArgumentsMode(QCommandLineParser::ParseAsPositionalArguments);
-	QCommandLineOption optImage("i", QObject::tr("Input Image File Path"), "input");
-	parser.addOption(optImage);
-	if (parser.parse(SingleApplication::arguments()) && parser.isSet(optImage))
-		createPinWindowByFile(parser.value(optImage));
-	else
-		createPinWindowByFile(":/icon/C_zerotwo_stand.png");	
 	
 	qApp->setQuitOnLastWindowClosed(false);
 

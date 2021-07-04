@@ -118,9 +118,6 @@
   <ItemGroup>
     <ResourceCompile Include="PicturePin.rc" />
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="Pin.ico" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />
