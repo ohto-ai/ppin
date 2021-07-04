@@ -41,7 +41,7 @@ void SingleApplication::initLocalConnection()
 		isInstanceRunning = true;
 		// 将启动参数发送到服务端
 		QTextStream stream(&socket);
-		stream << arguments().join(' ');
+		stream << arguments().join('\n');
 		stream.flush();
 		socket.waitForBytesWritten();
 		return;

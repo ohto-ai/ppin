@@ -75,7 +75,7 @@ int main(int argc,  char**argv)
 			parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 			parser.setOptionsAfterPositionalArgumentsMode(QCommandLineParser::ParseAsPositionalArguments);
 			parser.addOption(inputImageOption);
-			if (parser.parse(commandLine.split(' ')) && parser.isSet(inputImageOption))
+			if (parser.parse(commandLine.split('\n')) && parser.isSet(inputImageOption))
 				createPinWindowByFile(parser.value(inputImageOption));
 			else if (clipboardUpdated)
 			{
