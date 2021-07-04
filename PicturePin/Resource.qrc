@@ -11,5 +11,6 @@
         <file>res/button/lock.png</file>
         <file>res/button/quit.png</file>
         <file>res/button/error.png</file>
+        <file>res/button/capture.png</file>
     </qresource>
 </RCC>

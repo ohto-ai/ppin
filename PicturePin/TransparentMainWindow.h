@@ -11,6 +11,7 @@
 #include <QBuffer>
 #include <QApplication>
 #include <QDropEvent>
+#include <QClipboard>
 
 class TransparentMainWindow :
     public QMainWindow
@@ -30,6 +31,9 @@ public:
 				
 		auto loadMovieAC = new QAction(QIcon(":/icon/res/button/folder.png"), tr("[&O]pen Image"), this);
 		loadMovieAC->setShortcut(QKeySequence{ "Ctrl+O" });
+
+		auto captureCurrentImage = new QAction(QIcon(":/icon/res/button/capture.png"), tr("[&C]apture current Image"), this);
+		captureCurrentImage->setShortcut(QKeySequence{ "Ctrl+C" });
 		
 		auto lockPositionAC = new QAction(QIcon(":/icon/res/button/lock.png"), tr("Lock [&P]osition"), this);
 		lockPositionAC->setCheckable(true);
@@ -51,6 +55,11 @@ public:
 				loadMovie(QFileDialog::getOpenFileName(this, "Load image", ""
 					, "All Support Image Files(*.bmp;*.jpg;*.jpeg;*.png;*.gif);;Static Images Files(*.bmp;*.jpg;*.jpeg;*.png);;Dynamic Image Files(*.gif);;All Files(*.*)"));
 		});
+
+		connect(captureCurrentImage, &QAction::triggered, [=]
+			{
+				qApp->clipboard()->setImage(windowMovie.currentImage());
+			});
 		
 		connect(moveCenterAC, &QAction::triggered, [=]
 			{
@@ -68,6 +77,7 @@ public:
 			});
 		
 		addAction(loadMovieAC);
+		addAction(captureCurrentImage);
 		addAction(moveCenterAC);
 		addAction(lockPositionAC);
 		addAction(cloneWindowAC);

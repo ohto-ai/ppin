@@ -123,10 +123,11 @@ int main(int argc,  char**argv)
 	
 	systemTrayMenu.addAction(QIcon(":/icon/res/button/folder.png"), "&Open", [&]
 		{
-			if (auto fileName = QFileDialog::getOpenFileName(nullptr, "Load image", ""
+			if (auto fileNames = QFileDialog::getOpenFileNames(nullptr, "Load image", ""
 				, "All Support Image Files(*.bmp;*.jpg;*.jpeg;*.png;*.gif);;Static Images Files(*.bmp;*.jpg;*.jpeg;*.png);;Dynamic Image Files(*.gif);;All Files(*.*)");
-				!fileName.isEmpty())
-				createPinWindowByFile(fileName);
+				!fileNames.isEmpty())
+				for (auto fileName : fileNames)
+					createPinWindowByFile(fileName);
 		});
 
 	systemTrayMenu.addAction(QIcon(":/icon/res/button/clipboard.png"), "&From Clipboard", [&]
