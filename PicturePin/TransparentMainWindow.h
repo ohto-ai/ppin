@@ -10,6 +10,7 @@
 #include <QFileDialog>
 #include <QBuffer>
 #include <QApplication>
+#include <QDropEvent>
 
 class TransparentMainWindow :
     public QMainWindow
@@ -99,6 +100,8 @@ public:
 		addAction(cloneWindowAC);
 		addAction(closeAC);
 		setContextMenuPolicy(Qt::ContextMenuPolicy::ActionsContextMenu);
+
+		setAcceptDrops(true);
 	}
 
 	void updateAntLineValue()
@@ -194,8 +197,17 @@ public:
 		doLoadMovie();
 		return true;
 	}
+
+	void dragEnterEvent(QDragEnterEvent* event) override
+	{
+		event->acceptProposedAction();
+	}
+	void dropEvent(QDropEvent* e) override
+	{
+		emit cloneWindow(e->mimeData());
+	}
 	
-	virtual void mousePressEvent(QMouseEvent* event) override
+	void mousePressEvent(QMouseEvent* event) override
 	{
 		if (event->button() == Qt::LeftButton)
 		{
@@ -206,7 +218,7 @@ public:
 		}
 		QMainWindow::mousePressEvent(event);
 	}
-	virtual void mouseMoveEvent(QMouseEvent* event) override
+	void mouseMoveEvent(QMouseEvent* event) override
 	{
 		if (event->buttons() & Qt::LeftButton)
 		{
@@ -218,7 +230,7 @@ public:
 		}
 		QMainWindow::mouseMoveEvent(event);
 	}
-	virtual void mouseReleaseEvent(QMouseEvent* event) override
+	void mouseReleaseEvent(QMouseEvent* event) override
 	{
 		onDragging = false;
 		setCursor(Qt::ArrowCursor);
@@ -233,6 +245,7 @@ public:
 	
 signals:
 	void cloneWindow(QByteArray) const;
+	void cloneWindow(const QMimeData*) const;
 private:
 	bool onDragging;		// 是否正在拖动
 	QPoint startPosition;	// 拖动开始前的鼠标位置

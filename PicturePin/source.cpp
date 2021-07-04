@@ -31,8 +31,21 @@ int main(int argc,  char**argv)
 	std::function<TransparentMainWindow* (QByteArray)> createPinWindow;
 	std::function<TransparentMainWindow* (QString)> createPinWindowByFile;
 	std::function<TransparentMainWindow* (QImage)> createPinWindowByImage;
+	std::function<void (const QMimeData*)> createPinWindowByMimeData;
 	
 
+	createPinWindowByMimeData = [&](const QMimeData* mimeData)
+	{
+		bool success = false;
+		if (mimeData->hasUrls())
+			for (auto url : mimeData->urls())
+				if (createPinWindowByFile(url.toLocalFile()) != nullptr)
+					success = true;
+		if (!success && mimeData->hasImage())
+		{
+			createPinWindowByImage(qvariant_cast<QImage>(mimeData->imageData()));
+		}
+	};
 
 	createPinWindow = [&](QByteArray data)->TransparentMainWindow*
 	{
@@ -43,7 +56,8 @@ int main(int argc,  char**argv)
 			w->deleteLater();
 			return nullptr;
 		}
-		QObject::connect(w, &TransparentMainWindow::cloneWindow, createPinWindow);
+		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(QByteArray)const>(&TransparentMainWindow::cloneWindow), createPinWindow);
+		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(const QMimeData*)const>(&TransparentMainWindow::cloneWindow), createPinWindowByMimeData);
 		return w;
 	};
 	createPinWindowByFile = [&](QString fileName)->TransparentMainWindow*
@@ -55,7 +69,9 @@ int main(int argc,  char**argv)
 			w->deleteLater();
 			return nullptr;
 		}
-		QObject::connect(w, &TransparentMainWindow::cloneWindow, createPinWindow);
+		
+		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(QByteArray)const>(&TransparentMainWindow::cloneWindow), createPinWindow);
+		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(const QMimeData*)const>(&TransparentMainWindow::cloneWindow), createPinWindowByMimeData);
 		return w;
 	};
 	createPinWindowByImage = [&](QImage image)
@@ -63,7 +79,8 @@ int main(int argc,  char**argv)
 		auto w = new TransparentMainWindow(&mainWindow);
 		w->show();
 		w->loadMovie(image);
-		QObject::connect(w, &TransparentMainWindow::cloneWindow, createPinWindow);
+		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(QByteArray)const>(&TransparentMainWindow::cloneWindow), createPinWindow);
+		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(const QMimeData*)const>(&TransparentMainWindow::cloneWindow), createPinWindowByMimeData);
 		return w;
 	};
 	
@@ -80,18 +97,7 @@ int main(int argc,  char**argv)
 			else if (clipboardUpdated)
 			{
 				clipboardUpdated = false;
-				
-				const auto mimeData = qApp->clipboard()->mimeData();
-				
-				bool success = false;
-				if (mimeData->hasUrls())
-					for (auto url : mimeData->urls())
-						if (createPinWindowByFile(url.toLocalFile()) != nullptr)
-							success = true;
-				if (!success && mimeData->hasImage())
-				{
-					createPinWindowByImage(qvariant_cast<QImage>(mimeData->imageData()));
-				}
+				createPinWindowByMimeData(qApp->clipboard()->mimeData());
 			}
 			else
 			{
@@ -111,18 +117,7 @@ int main(int argc,  char**argv)
 
 	menu.addAction("&From Clipboard", [&]
 		{
-
-			const auto mimeData = qApp->clipboard()->mimeData();
-
-			bool success = false;
-			if (mimeData->hasUrls())
-				for (auto url : mimeData->urls())
-					if (createPinWindowByFile(url.toLocalFile()) != nullptr)
-						success = true;
-			if (!success && mimeData->hasImage())
-			{
-				createPinWindowByImage(qvariant_cast<QImage>(mimeData->imageData()));
-			}
+			createPinWindowByMimeData(qApp->clipboard()->mimeData());
 		});
 
 
