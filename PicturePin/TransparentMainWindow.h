@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <QtWidgets/QMainWindow>
-#include <QMouseEvent>
+#include <QMimeData>
 #include <QPainter>
 #include <QAction>
 #include <QMovie>
@@ -200,11 +200,33 @@ public:
 
 	void dragEnterEvent(QDragEnterEvent* event) override
 	{
-		event->acceptProposedAction();
+		auto mimeData = event->mimeData();
+		bool success = false;
+		if (mimeData->hasUrls())
+		{
+			for (auto url : mimeData->urls())
+			{
+				if (url.isLocalFile())
+				{
+					const QMovie movie(url.toLocalFile());
+					if (movie.isValid())
+					{
+						success = true;
+						break;
+					}
+				}
+			}
+		}
+		if (!success && mimeData->hasImage())
+		{
+			success = true;
+		}
+		if (success)
+			event->acceptProposedAction();
 	}
-	void dropEvent(QDropEvent* e) override
+	void dropEvent(QDropEvent* event) override
 	{
-		emit cloneWindow(e->mimeData());
+		emit cloneWindow(event->mimeData());
 	}
 	
 	void mousePressEvent(QMouseEvent* event) override

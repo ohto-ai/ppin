@@ -39,8 +39,9 @@ int main(int argc,  char**argv)
 		bool success = false;
 		if (mimeData->hasUrls())
 			for (auto url : mimeData->urls())
-				if (createPinWindowByFile(url.toLocalFile()) != nullptr)
-					success = true;
+				if (url.isLocalFile())
+					if (createPinWindowByFile(url.toLocalFile()) != nullptr)
+						success = true;
 		if (!success && mimeData->hasImage())
 		{
 			createPinWindowByImage(qvariant_cast<QImage>(mimeData->imageData()));
