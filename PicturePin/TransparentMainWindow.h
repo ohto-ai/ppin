@@ -90,15 +90,7 @@ public:
 		
 		connect(cloneWindowAC, &QAction::triggered, [=]
 			{
-				auto fileName = windowMovie.fileName();
-			if(fileName.isEmpty())
-			{
-				emit cloneWindow(QImage::fromData(imageByteArray));
-			}
-			else
-			{
-				emit cloneWindow(windowMovie.fileName());
-			}
+				emit cloneWindow(imageByteArray);
 			});
 		addAction(showAntLineAC);	
 		addAction(loadMovieAC);
@@ -155,18 +147,32 @@ public:
 		}
 	}
 
+	void doLoadMovie()
+	{
+		deviceBuffer.open(QIODevice::ReadOnly);
+		windowMovie.setDevice(&deviceBuffer);
+		windowMovie.start();
+		setFixedSize(windowMovie.scaledSize());
+		move((QApplication::primaryScreen()->size().width() - width()) / 2, (QApplication::primaryScreen()->size().height() - height()) / 2);
+	}
+
+	bool loadMovie(QByteArray data)
+	{
+		deviceBuffer.close();
+		deviceBuffer.open(QIODevice::WriteOnly);
+		deviceBuffer.write(data);
+		deviceBuffer.close();
+		doLoadMovie();
+		return true;
+	}
+	
 	bool loadMovie(QImage image)
 	{
 		deviceBuffer.close();
 		deviceBuffer.open(QIODevice::WriteOnly);
 		image.save(&deviceBuffer, "png");
 		deviceBuffer.close();
-		
-		deviceBuffer.open(QIODevice::ReadOnly);
-		windowMovie.setDevice(&deviceBuffer);
-		windowMovie.start();
-		setFixedSize(windowMovie.scaledSize());
-		move((QApplication::primaryScreen()->size().width() - width()) / 2, (QApplication::primaryScreen()->size().height() - height()) / 2);
+		doLoadMovie();
 		return true;
 	}
 	
@@ -176,11 +182,16 @@ public:
 			return false;
 		if (const QMovie movie(fileName); !movie.isValid())
 			return false;
-		windowMovie.setFileName(fileName);
-		windowMovie.start();
-		setFixedSize(windowMovie.scaledSize());
-		move((QApplication::primaryScreen()->size().width() - width()) / 2, (QApplication::primaryScreen()->size().height() - height()) / 2);
 
+		QFile file(fileName);
+		deviceBuffer.close();
+		deviceBuffer.open(QIODevice::WriteOnly);
+		file.open(QIODevice::ReadOnly);
+		deviceBuffer.write(file.readAll());
+		deviceBuffer.close();
+		file.close();
+		
+		doLoadMovie();
 		return true;
 	}
 	
@@ -221,8 +232,7 @@ public:
 	}
 	
 signals:
-	void cloneWindow(QString) const;
-	void cloneWindow(QImage) const;
+	void cloneWindow(QByteArray) const;
 private:
 	bool onDragging;		// 是否正在拖动
 	QPoint startPosition;	// 拖动开始前的鼠标位置

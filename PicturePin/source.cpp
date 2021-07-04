@@ -28,11 +28,25 @@ int main(int argc,  char**argv)
 		{
 			clipboardUpdated = true;
 		});
-	std::function<TransparentMainWindow* (QString)> createPinWindow;
+	std::function<TransparentMainWindow* (QByteArray)> createPinWindow;
+	std::function<TransparentMainWindow* (QString)> createPinWindowByFile;
 	std::function<TransparentMainWindow* (QImage)> createPinWindowByImage;
 	
 
-	createPinWindow = [&](QString fileName)->TransparentMainWindow*
+
+	createPinWindow = [&](QByteArray data)->TransparentMainWindow*
+	{
+		auto w = new TransparentMainWindow(&mainWindow);
+		w->show();
+		if (!w->loadMovie(data))
+		{
+			w->deleteLater();
+			return nullptr;
+		}
+		QObject::connect(w, &TransparentMainWindow::cloneWindow, createPinWindow);
+		return w;
+	};
+	createPinWindowByFile = [&](QString fileName)->TransparentMainWindow*
 	{
 		auto w = new TransparentMainWindow(&mainWindow);
 		w->show();
@@ -41,8 +55,7 @@ int main(int argc,  char**argv)
 			w->deleteLater();
 			return nullptr;
 		}
-		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(QString)const>(&TransparentMainWindow::cloneWindow), createPinWindow);
-		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(QImage)const>(&TransparentMainWindow::cloneWindow), createPinWindowByImage);
+		QObject::connect(w, &TransparentMainWindow::cloneWindow, createPinWindow);
 		return w;
 	};
 	createPinWindowByImage = [&](QImage image)
@@ -50,8 +63,7 @@ int main(int argc,  char**argv)
 		auto w = new TransparentMainWindow(&mainWindow);
 		w->show();
 		w->loadMovie(image);
-		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(QString)const>(&TransparentMainWindow::cloneWindow), createPinWindow);
-		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(QImage)const>(&TransparentMainWindow::cloneWindow), createPinWindowByImage);
+		QObject::connect(w, &TransparentMainWindow::cloneWindow, createPinWindow);
 		return w;
 	};
 	
@@ -64,7 +76,7 @@ int main(int argc,  char**argv)
 			parser.setOptionsAfterPositionalArgumentsMode(QCommandLineParser::ParseAsPositionalArguments);
 			parser.addOption(inputImageOption);
 			if (parser.parse(commandLine.split(' ')) && parser.isSet(inputImageOption))
-				createPinWindow(parser.value(inputImageOption));
+				createPinWindowByFile(parser.value(inputImageOption));
 			else if (clipboardUpdated)
 			{
 				clipboardUpdated = false;
@@ -74,7 +86,7 @@ int main(int argc,  char**argv)
 				bool success = false;
 				if (mimeData->hasUrls())
 					for (auto url : mimeData->urls())
-						if (createPinWindow(url.toLocalFile()) != nullptr)
+						if (createPinWindowByFile(url.toLocalFile()) != nullptr)
 							success = true;
 				if (!success && mimeData->hasImage())
 				{
@@ -92,7 +104,7 @@ int main(int argc,  char**argv)
 			if (auto fileName = QFileDialog::getOpenFileName(nullptr, "Load image", ""
 				, "All Support Image Files(*.bmp;*.jpg;*.jpeg;*.png;*.gif);;Static Images Files(*.bmp;*.jpg;*.jpeg;*.png);;Dynamic Image Files(*.gif);;All Files(*.*)");
 				!fileName.isEmpty())
-				createPinWindow(fileName);
+				createPinWindowByFile(fileName);
 		});
 
 	menu.addAction("&From Clipboard", [&]
@@ -103,7 +115,7 @@ int main(int argc,  char**argv)
 			bool success = false;
 			if (mimeData->hasUrls())
 				for (auto url : mimeData->urls())
-					if (createPinWindow(url.toLocalFile()) != nullptr)
+					if (createPinWindowByFile(url.toLocalFile()) != nullptr)
 						success = true;
 			if (!success && mimeData->hasImage())
 			{
@@ -148,9 +160,9 @@ int main(int argc,  char**argv)
 	QCommandLineOption optImage("i", QObject::tr("Input Image File Path"), "input");
 	parser.addOption(optImage);
 	if (parser.parse(SingleApplication::arguments()) && parser.isSet(optImage))
-		createPinWindow(parser.value(optImage));
+		createPinWindowByFile(parser.value(optImage));
 	else
-		createPinWindow(":/icon/C_zerotwo_stand.png");	
+		createPinWindowByFile(":/icon/C_zerotwo_stand.png");	
 	
 	qApp->setQuitOnLastWindowClosed(false);
 
