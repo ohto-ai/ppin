@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="windows-1252"?>
 <>
   <InputFile>D:\repos\PicturePin\x64\Release\PicturePin.exe</InputFile>
-  <OutputFile>D:\Documents\Desktop\PicturePin.exe</OutputFile>
+  <OutputFile>D:\plugins\PicturePin\PicturePin.exe</OutputFile>
   <Files>
     <Enabled>True</Enabled>
     <DeleteExtractedOnExit>True</DeleteExtractedOnExit>

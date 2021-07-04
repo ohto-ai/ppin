@@ -68,14 +68,14 @@ int main(int argc,  char**argv)
 	};
 	
 
-	QObject::connect(&a, &SingleApplication::newInstanceStartup, [&](QString commandLine)
+	QObject::connect(&a, &SingleApplication::newInstanceStartup, [&](QStringList commandLine)
 		{
 			const QCommandLineOption inputImageOption("i", QObject::tr("Input Image File Path"), "input");
 			QCommandLineParser parser;
 			parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 			parser.setOptionsAfterPositionalArgumentsMode(QCommandLineParser::ParseAsPositionalArguments);
 			parser.addOption(inputImageOption);
-			if (parser.parse(commandLine.split('\n')) && parser.isSet(inputImageOption))
+			if (parser.parse(commandLine) && parser.isSet(inputImageOption))
 				createPinWindowByFile(parser.value(inputImageOption));
 			else if (clipboardUpdated)
 			{
@@ -94,7 +94,9 @@ int main(int argc,  char**argv)
 				}
 			}
 			else
-				systemTray.showMessage(QObject::tr("Invalid parameter"), commandLine, appIcon);
+			{
+				systemTray.showMessage(QObject::tr("Invalid parameter"), commandLine.join(' '), appIcon);
+			}
 		});
 
 

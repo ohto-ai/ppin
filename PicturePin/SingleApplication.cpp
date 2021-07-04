@@ -26,7 +26,7 @@ void SingleApplication::receiveNewLocalConnection()
 		return;
 	socket->waitForReadyRead(1000);
 	QTextStream stream(socket);
-	emit newInstanceStartup(stream.readAll());
+	emit newInstanceStartup(stream.readAll().split('\n'));
 	socket->deleteLater();
 }
 
@@ -39,14 +39,13 @@ void SingleApplication::initLocalConnection()
 	if (socket.waitForConnected(500))
 	{
 		isInstanceRunning = true;
-		// 将启动参数发送到服务端
 		QTextStream stream(&socket);
 		stream << arguments().join('\n');
 		stream.flush();
 		socket.waitForBytesWritten();
 		return;
 	}
-	// 连接不上服务器，就创建一个
+	
 	createLocalServer();
 }
 

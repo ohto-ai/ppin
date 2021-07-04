@@ -40,24 +40,24 @@ public:
 		repaintTimer->setInterval(100);
 		connect(repaintTimer, &QTimer::timeout, this, &TransparentMainWindow::updateAntLineValue);
 		
-		auto showAntLineAC = new QAction(tr("&Border"), this);
+		auto showAntLineAC = new QAction(tr("[&B]order"), this);
 		showAntLineAC->setCheckable(true);
 		showAntLineAC->setShortcut(QKeySequence{ "Ctrl+B" });
 		
-		auto loadMovieAC = new QAction(style()->standardIcon(QStyle::StandardPixmap::SP_DialogOpenButton), tr("&Open Image"), this);
+		auto loadMovieAC = new QAction(style()->standardIcon(QStyle::StandardPixmap::SP_DialogOpenButton), tr("[&O]pen Image"), this);
 		loadMovieAC->setShortcut(QKeySequence{ "Ctrl+O" });
 		
-		auto lockPositionAC = new QAction(tr("Lock &Position"), this);
+		auto lockPositionAC = new QAction(tr("Lock [&P]osition"), this);
 		lockPositionAC->setCheckable(true);
 		lockPositionAC->setShortcut(QKeySequence{ "Ctrl+P" });
 		
-		auto moveCenterAC = new QAction(tr("&Move Center"), this);
+		auto moveCenterAC = new QAction(tr("[&M]ove Center"), this);
 		moveCenterAC->setShortcut(QKeySequence{ "Ctrl+M" });
 
-		auto closeAC = new QAction(style()->standardIcon(QStyle::StandardPixmap::SP_TitleBarCloseButton), tr("&Close"), this);
+		auto closeAC = new QAction(style()->standardIcon(QStyle::StandardPixmap::SP_TitleBarCloseButton), tr("Close"), this);
 		closeAC->setShortcut(QKeySequence{ "Alt+F4" });
 
-		auto cloneWindowAC = new QAction(tr("Clone &Window"), this);
+		auto cloneWindowAC = new QAction(tr("Clone [&W]indow"), this);
 		cloneWindowAC->setShortcut(QKeySequence{ "Alt+W" });
 					
 		connect(closeAC, &QAction::triggered, this, &QMainWindow::close);

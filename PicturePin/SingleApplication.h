@@ -1,4 +1,4 @@
-#ifndef SINGLEAPPLICATION_H
+ï»¿#ifndef SINGLEAPPLICATION_H
 #define SINGLEAPPLICATION_H
 
 #include <QApplication>
@@ -10,17 +10,17 @@ class SingleApplication : public QApplication
 	Q_OBJECT
 public:
 	SingleApplication(int& argc, char** argv);
-	bool instanceRunning() const;					// ÊµÀıÒÑ¾­ÔËĞĞ
-	void receiveNewLocalConnection();				// ÊÕµ½ĞÂµÄÁ¬½Ó
+	bool instanceRunning() const;					// å®ä¾‹å·²ç»è¿è¡Œ
+	void receiveNewLocalConnection();				// æ”¶åˆ°æ–°çš„è¿æ¥
 signals:
-	void newInstanceStartup(QString commandLine);	// ĞÂÊµÀıÆô¶¯
+	void newInstanceStartup(QStringList commandLine);	// æ–°å®ä¾‹å¯åŠ¨
 private:
 	
-	void initLocalConnection();		// ³õÊ¼»¯±¾µØÁ¬½Ó	
-	void createLocalServer();		// ´´½¨·şÎñ¶Ë
-	bool isInstanceRunning;			// ÊÇ·ñÒÑ¾­ÓĞÊµÀıÔÚÔËĞĞ
-	QLocalServer* localServer;		// ±¾µØsocket Server
-	QString serverName;				// ·şÎñÃû³Æ
+	void initLocalConnection();		// åˆå§‹åŒ–æœ¬åœ°è¿æ¥	
+	void createLocalServer();		// åˆ›å»ºæœåŠ¡ç«¯
+	bool isInstanceRunning;			// æ˜¯å¦å·²ç»æœ‰å®ä¾‹åœ¨è¿è¡Œ
+	QLocalServer* localServer;		// æœ¬åœ°socket Server
+	QString serverName;				// æœåŠ¡åç§°
 };
 
 #endif // SINGLEAPPLICATION_H
