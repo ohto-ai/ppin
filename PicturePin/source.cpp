@@ -88,17 +88,27 @@ int main(int argc,  char**argv)
 	auto parserCommandLineToCreateWindow = [&](QStringList commandLine)
 	{
 		const QCommandLineOption inputImageOption("i", QObject::tr("Input Image File Path"), "ImagePath");
+		const QCommandLineOption clipboardImageOption("c", QObject::tr("Use Clipboard"));
 		QCommandLineParser parser;
 		parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 		parser.setOptionsAfterPositionalArgumentsMode(QCommandLineParser::ParseAsPositionalArguments);
 		parser.addOption(inputImageOption);
+		parser.addOption(clipboardImageOption);
 		parser.process(commandLine);
+
+		bool success{ false };
 		if (parser.isSet(inputImageOption))
 		{
 			createPinWindowByFile(parser.value(inputImageOption));
-			return true;
+			success = true;
 		}
-		return false;
+		if (parser.isSet(clipboardImageOption))
+		{
+			createPinWindowByMimeData(qApp->clipboard()->mimeData());
+			success = true;
+		}
+
+		return success;
 	};
 
 	
