@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/icon">
         <file alias="MainIcon">res/main/pin.png</file>
-        <file alias="Demo">res/demo/example.png</file>
+        <file alias="Demo">res/demo/example.jpg</file>
         <file>res/button/about.png</file>
         <file>res/button/clipboard.png</file>
         <file>res/button/clone.png</file>
