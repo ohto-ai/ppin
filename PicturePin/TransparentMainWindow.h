@@ -12,6 +12,7 @@
 #include <QApplication>
 #include <QDropEvent>
 #include <QClipboard>
+#include <QSCreen>
 
 class TransparentMainWindow :
     public QMainWindow
@@ -171,7 +172,7 @@ public:
 		if (event->button() == Qt::LeftButton)
 		{
 			onDragging = true;
-			startPosition = event->globalPosition().toPoint();
+			startPosition = event->globalPos();
 			framePosition = frameGeometry().topLeft();
 			setCursor(Qt::ClosedHandCursor);
 		}
@@ -183,7 +184,7 @@ public:
 		{
 			if (onDragging && !isPositionLocked)
 			{
-				QPoint delta = event->globalPosition().toPoint() - startPosition;
+				QPoint delta = event->globalPos() - startPosition;
 				move(framePosition + delta);
 			}
 		}
