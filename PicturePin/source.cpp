@@ -160,25 +160,26 @@ int main(int argc,  char**argv)
 				}
 			}
 		});
-	
+
+	systemTrayMenu.addAction(QIcon(":/icon/res/button/demo.png"), "&Demo", [=]
+		{
+			createPinWindowByFile(":/icon/Demo");
+		});
+
 	systemTrayMenu.addAction(QIcon(":/icon/res/button/about.png"), "&About", [=]
 		{
 			QDesktopServices::openUrl(QUrl("https://github.com/Ohto-Ai"));
 		});
-	
+
 	systemTrayMenu.addAction(QIcon(":/icon/res/button/quit.png"), "&Quit", [=]
 		{
 			if (QMessageBox::question(nullptr, QObject::tr("Quit"), QObject::tr("Quit the application?")) == QMessageBox::Yes)
 				qApp->quit();
 		});
-	
-	systemTray.setContextMenu(&systemTrayMenu);
 
-	if (!parserCommandLineToCreateWindow(SingleApplication::arguments()))
-		createPinWindowByFile(":/icon/Demo");
+	systemTray.setContextMenu(&systemTrayMenu);
 	
 	systemTray.show();
-
 	
 	qApp->setQuitOnLastWindowClosed(false);
 

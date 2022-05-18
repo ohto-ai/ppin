@@ -36,18 +36,18 @@ public:
 		auto captureCurrentImage = new QAction(QIcon(":/icon/res/button/capture.png"), tr("[&C]apture current Image"), this);
 		captureCurrentImage->setShortcut(QKeySequence{ "Ctrl+C" });
 		
-		auto lockPositionAC = new QAction(QIcon(":/icon/res/button/lock.png"), tr("Lock [&P]osition"), this);
+		auto lockPositionAC = new QAction(QIcon(":/icon/res/button/lock.png"), tr("[&L]ock Position"), this);
 		lockPositionAC->setCheckable(true);
-		lockPositionAC->setShortcut(QKeySequence{ "Ctrl+P" });
+		lockPositionAC->setShortcut(QKeySequence{ "Ctrl+L" });
 		
 		auto moveCenterAC = new QAction(QIcon(":/icon/res/button/cross.png"), tr("[&M]ove Center"), this);
 		moveCenterAC->setShortcut(QKeySequence{ "Ctrl+M" });
 
 		auto closeAC = new QAction(QIcon(":/icon/res/button/close.png"), tr("Close"), this);
-		closeAC->setShortcut(QKeySequence{ "Alt+F4" });
+		closeAC->setShortcut(QKeySequence{ "Ctrl+W" });
 
-		auto cloneWindowAC = new QAction(QIcon(":/icon/res/button/clone.png"), tr("Clone [&W]indow"), this);
-		cloneWindowAC->setShortcut(QKeySequence{ "Alt+W" });
+		auto cloneWindowAC = new QAction(QIcon(":/icon/res/button/clone.png"), tr("[&D]uplicate Window"), this);
+		cloneWindowAC->setShortcut(QKeySequence{ "Ctrl+D" });
 					
 		connect(closeAC, &QAction::triggered, this, &QMainWindow::close);
 				
@@ -91,6 +91,7 @@ public:
 	void doLoadMovie()
 	{
 		deviceBuffer.open(QIODevice::ReadOnly);
+		windowMovie.stop();
 		windowMovie.setDevice(&deviceBuffer);
 		windowMovie.start();
 		setFixedSize(windowMovie.scaledSize());
