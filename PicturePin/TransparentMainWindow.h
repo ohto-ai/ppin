@@ -12,7 +12,7 @@
 #include <QApplication>
 #include <QDropEvent>
 #include <QClipboard>
-#include <QSCreen>
+#include <QScreen>
 
 class TransparentMainWindow :
     public QMainWindow
