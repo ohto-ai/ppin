@@ -14,14 +14,14 @@ int main(int argc,  char**argv)
 	QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 	SingleApplication a(argc, argv);
-	
+
 	if (a.instanceRunning())
 		return 0;
 
 	auto appIcon = QIcon(":/icon/MainIcon");
 
 	QMainWindow mainWindow;
-	
+
 	qApp->setWindowIcon(appIcon);
 	QSystemTrayIcon systemTray;
 	systemTray.setIcon(appIcon);
@@ -35,7 +35,7 @@ int main(int argc,  char**argv)
 	std::function<TransparentMainWindow* (QString)> createPinWindowByFile;
 	std::function<TransparentMainWindow* (QImage)> createPinWindowByImage;
 	std::function<void (const QMimeData*)> createPinWindowByMimeData;
-	
+
 	createPinWindowByMimeData = [&](const QMimeData* mimeData)
 	{
 		bool success = false;
@@ -72,7 +72,7 @@ int main(int argc,  char**argv)
 			w->deleteLater();
 			return nullptr;
 		}
-		
+
 		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(QByteArray)const>(&TransparentMainWindow::cloneWindow), createPinWindow);
 		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(const QMimeData*)const>(&TransparentMainWindow::cloneWindow), createPinWindowByMimeData);
 		return w;
@@ -86,7 +86,7 @@ int main(int argc,  char**argv)
 		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(const QMimeData*)const>(&TransparentMainWindow::cloneWindow), createPinWindowByMimeData);
 		return w;
 	};
-	
+
 
 	auto parserCommandLineToCreateWindow = [&](QStringList commandLine)
 	{
@@ -114,12 +114,12 @@ int main(int argc,  char**argv)
 		return success;
 	};
 
-	
+
 	QObject::connect(&a, &SingleApplication::newInstanceStartup, [&](QStringList commandLine)
 		{
 			if (parserCommandLineToCreateWindow(commandLine))
 				return;
-		
+
 			if (clipboardUpdated)
 			{
 				clipboardUpdated = false;
@@ -133,7 +133,7 @@ int main(int argc,  char**argv)
 
 
 	QMenu systemTrayMenu;
-	
+
 	systemTrayMenu.addAction(QIcon(":/icon/res/button/folder.png"), "&Open", [&]
 		{
 			if (auto fileNames = QFileDialog::getOpenFileNames(nullptr, "Load image", ""
@@ -178,9 +178,9 @@ int main(int argc,  char**argv)
 		});
 
 	systemTray.setContextMenu(&systemTrayMenu);
-	
+
 	systemTray.show();
-	
+
 	qApp->setQuitOnLastWindowClosed(false);
 
 	return a.exec();

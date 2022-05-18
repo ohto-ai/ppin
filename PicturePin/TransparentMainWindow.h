@@ -29,17 +29,17 @@ public:
 		mainLabel.setMovie(&windowMovie);
 
 		windowMovie.setCacheMode(QMovie::CacheAll);
-				
+
 		auto loadMovieAC = new QAction(QIcon(":/icon/res/button/folder.png"), tr("[&O]pen Image"), this);
 		loadMovieAC->setShortcut(QKeySequence{ "Ctrl+O" });
 
 		auto captureCurrentImage = new QAction(QIcon(":/icon/res/button/capture.png"), tr("[&C]apture current Image"), this);
 		captureCurrentImage->setShortcut(QKeySequence{ "Ctrl+C" });
-		
+
 		auto lockPositionAC = new QAction(QIcon(":/icon/res/button/lock.png"), tr("[&L]ock Position"), this);
 		lockPositionAC->setCheckable(true);
 		lockPositionAC->setShortcut(QKeySequence{ "Ctrl+L" });
-		
+
 		auto moveCenterAC = new QAction(QIcon(":/icon/res/button/cross.png"), tr("[&M]ove Center"), this);
 		moveCenterAC->setShortcut(QKeySequence{ "Ctrl+M" });
 
@@ -48,9 +48,9 @@ public:
 
 		auto cloneWindowAC = new QAction(QIcon(":/icon/res/button/clone.png"), tr("[&D]uplicate Window"), this);
 		cloneWindowAC->setShortcut(QKeySequence{ "Ctrl+D" });
-					
+
 		connect(closeAC, &QAction::triggered, this, &QMainWindow::close);
-				
+
 		connect(loadMovieAC, &QAction::triggered, [=]
 		{
 				loadMovie(QFileDialog::getOpenFileName(this, "Load image", ""
@@ -61,22 +61,22 @@ public:
 			{
 				qApp->clipboard()->setImage(windowMovie.currentImage());
 			});
-		
+
 		connect(moveCenterAC, &QAction::triggered, [=]
 			{
 				move((QApplication::primaryScreen()->size().width() - width()) / 2, (QApplication::primaryScreen()->size().height() - height()) / 2);
 			});
-				
+
 		connect(lockPositionAC, &QAction::triggered, [=]
 			{
 				isPositionLocked = lockPositionAC->isChecked();
 			});
-		
+
 		connect(cloneWindowAC, &QAction::triggered, [=]
 			{
 				emit cloneWindow(imageByteArray);
 			});
-		
+
 		addAction(loadMovieAC);
 		addAction(captureCurrentImage);
 		addAction(moveCenterAC);
@@ -94,7 +94,9 @@ public:
 		windowMovie.stop();
 		windowMovie.setDevice(&deviceBuffer);
 		windowMovie.start();
-		setFixedSize(windowMovie.scaledSize());
+		currentScalePercentIndex = scale100Index;
+		setFixedSize(movieSize);
+		movieSize = size();
 		move((QApplication::primaryScreen()->size().width() - width()) / 2, (QApplication::primaryScreen()->size().height() - height()) / 2);
 	}
 
@@ -107,7 +109,7 @@ public:
 		doLoadMovie();
 		return true;
 	}
-	
+
 	bool loadMovie(QImage image)
 	{
 		deviceBuffer.close();
@@ -117,7 +119,7 @@ public:
 		doLoadMovie();
 		return true;
 	}
-	
+
 	bool loadMovie(QString fileName)
 	{
 		if (fileName.isEmpty())
@@ -132,7 +134,7 @@ public:
 		deviceBuffer.write(file.readAll());
 		deviceBuffer.close();
 		file.close();
-		
+
 		doLoadMovie();
 		return true;
 	}
@@ -167,7 +169,7 @@ public:
 	{
 		emit cloneWindow(event->mimeData());
 	}
-	
+
 	void mousePressEvent(QMouseEvent* event) override
 	{
 		if (event->button() == Qt::LeftButton)
@@ -197,13 +199,39 @@ public:
 		setCursor(Qt::ArrowCursor);
 		QMainWindow::mouseReleaseEvent(event);
 	}
+	void wheelEvent(QWheelEvent* event) override
+	{
+		if (!isPositionLocked && QGuiApplication::keyboardModifiers() == Qt::CTRL)
+		{
+			auto index = currentScalePercentIndex;
+			index += event->delta() / 120;
+			if (index < 0)
+				index = 0;
+			else if (index >= ScaleIndexMax)
+				index = ScaleIndexMax - 1;
+
+			if (index != currentScalePercentIndex)
+			{
+				auto posOffset = (event->globalPos() - frameGeometry().topLeft())
+					* (ScalePercentByIndex[currentScalePercentIndex] - ScalePercentByIndex[index])
+					/ ScalePercentByIndex[currentScalePercentIndex];
+				currentScalePercentIndex = index;
+				auto calcedSize = movieSize * ScalePercentByIndex[currentScalePercentIndex] / 100;
+				move(frameGeometry().topLeft() + posOffset);
+				windowMovie.setPaused(true);
+				setFixedSize(calcedSize);
+				windowMovie.setScaledSize(calcedSize);
+				windowMovie.setPaused(false);
+			}
+		}
+	}
 
 	void closeEvent(QCloseEvent* event) override
 	{
 		deleteLater();
 		QMainWindow::closeEvent(event);
 	}
-	
+
 signals:
 	void cloneWindow(QByteArray) const;
 	void cloneWindow(const QMimeData*) const;
@@ -215,6 +243,18 @@ private:
 	bool isPositionLocked{ false };
 	QLabel mainLabel;
 	QMovie windowMovie{ this };
+	QSize movieSize{};
+	int currentScalePercentIndex{ scale100Index };
+
+	static constexpr int ScalePercentByIndex[] =
+	{
+		5, 6, 7, 9, 11, 14, 17, 21, 26,
+		33, 41, 51, 64, 80, 100, 120, 144,
+		173, 208, 250, 300, 360, 432, 518,
+		622, 746, 895, 1074, 1289, 1547, 1600
+	};
+	static constexpr int scale100Index = 13;
+	static constexpr int ScaleIndexMax = sizeof(ScalePercentByIndex) / sizeof(int);
 
 	QByteArray imageByteArray;
 	QBuffer deviceBuffer{ &imageByteArray, this };

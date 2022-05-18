@@ -45,7 +45,7 @@ void SingleApplication::initLocalConnection()
 		socket.waitForBytesWritten();
 		return;
 	}
-	
+
 	createLocalServer();
 }
 
