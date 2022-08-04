@@ -3,11 +3,12 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = PicturePin
+TARGET = ppin
 DESTDIR = bin/
 INCLUDEPATH += .
 
-CONFIG += C++17
+CONFIG += c++17
+QMAKE_CXXFLAGS += -std=c++17
 
 OBJECTS_DIR = build/obj/
 MOC_DIR = build/
@@ -22,8 +23,6 @@ QT += core \
     widgets
 
 # Input
-HEADERS += PicturePin/resource.h \
-           PicturePin/SingleApplication.h \
-           PicturePin/TransparentMainWindow.h
-SOURCES += PicturePin/SingleApplication.cpp PicturePin/source.cpp
-RESOURCES += PicturePin/Resource.qrc
+HEADERS += src/*.h
+SOURCES += src/*.cpp
+RESOURCES += src/Resource.qrc

@@ -13,6 +13,7 @@
 #include <QDropEvent>
 #include <QClipboard>
 #include <QScreen>
+#include <array>
 
 class TransparentMainWindow :
     public QMainWindow
@@ -207,8 +208,8 @@ public:
 			index += event->delta() / 120;
 			if (index < 0)
 				index = 0;
-			else if (index >= ScaleIndexMax)
-				index = ScaleIndexMax - 1;
+			else if (index >= ScalePercentByIndex.size())
+				index = ScalePercentByIndex.size() - 1;
 
 			if (index != currentScalePercentIndex)
 			{
@@ -246,15 +247,13 @@ private:
 	QSize movieSize{};
 	int currentScalePercentIndex{ scale100Index };
 
-	static constexpr int ScalePercentByIndex[] =
-	{
+	static inline constexpr std::array<int, 31> ScalePercentByIndex{
 		5, 6, 7, 9, 11, 14, 17, 21, 26,
 		33, 41, 51, 64, 80, 100, 120, 144,
 		173, 208, 250, 300, 360, 432, 518,
 		622, 746, 895, 1074, 1289, 1547, 1600
 	};
-	static constexpr int scale100Index = 13;
-	static constexpr int ScaleIndexMax = sizeof(ScalePercentByIndex) / sizeof(int);
+	static constexpr size_t scale100Index = 13;
 
 	QByteArray imageByteArray;
 	QBuffer deviceBuffer{ &imageByteArray, this };

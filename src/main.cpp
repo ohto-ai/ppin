@@ -10,7 +10,6 @@
 
 int main(int argc,  char**argv)
 {
-	//qputenv("QT_SCALE_FACTOR", "0.8");
 	QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 	SingleApplication a(argc, argv);

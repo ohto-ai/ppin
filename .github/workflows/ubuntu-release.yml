@@ -1,0 +1,28 @@
+name: Ubuntu Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build & Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+      - name: Install Qt & SSL
+        run: sudo apt install qt5-default libssl-dev -y
+      - name: Build Ubuntu
+        run: |
+          qmake
+          make -j8
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: bin/ppin

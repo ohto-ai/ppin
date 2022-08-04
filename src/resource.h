@@ -1,8 +1,4 @@
-﻿//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ 生成的包含文件。
-// 供 WindowZeroTwo.rc 使用
-//
-#define IDI_MAINICON                    101
+﻿#define IDI_MAINICON                    101
 
 // Next default values for new objects
 // 
