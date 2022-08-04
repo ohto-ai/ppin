@@ -4,27 +4,34 @@ on:
   push:
     branches: [ master ]
     paths-ignore:
-      - 'README.md'
-      - 'LICENSE'
+    - 'README.md'
+    - 'LICENSE'
   pull_request:
     branches: [ master ]
     paths-ignore:
-      - 'README.md'
-      - 'LICENSE'
+    - 'README.md'
+    - 'LICENSE'
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: 'true'
-      - name: Install Qt & SSL
-        run: sudo apt install qt5-default libssl-dev -y
-      - name: Build Ubuntu
-        run: |
-          qmake
-          make -j8
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2.14.0
+      with:
+          version: 5.15.2
+
+    - name: Install SSL
+      run: sudo apt install libssl-dev -y
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: 'true'
+        fetch-depth: 1
+
+    - name: Build Ubuntu
+      run: |
+        qmake
+        make -j8
