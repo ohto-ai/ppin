@@ -13,11 +13,10 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-2019
     strategy:
       # 矩阵配置
       matrix:
-        os: [windows-2019]
         include:
           - qt_ver: 5.15.2
             qt_arch: win32_msvc2019
@@ -65,7 +64,7 @@ jobs:
       - name: Package
         id: package
         env:
-          archiveName: ppin_${{ matrix.os }}_${{ matrix.msvc_arch }}
+          archiveName: ppin_windows_${{ matrix.msvc_arch }}
           msvcArch: ${{ matrix.msvc_arch }}
         shell: pwsh
         run: |
