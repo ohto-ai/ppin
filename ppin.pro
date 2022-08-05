@@ -4,7 +4,6 @@
 
 TEMPLATE = app
 TARGET = ppin
-DESTDIR = bin/
 INCLUDEPATH += .
 
 CONFIG += c++17
@@ -15,6 +14,12 @@ MOC_DIR = build/
 RCC_DIR = build/
 UI_DIR = build/
 
+CONFIG(debug,debug|release) {
+    DESTDIR = $$absolute_path(bin/debug)
+} else {
+    DESTDIR = $$absolute_path(bin/release)
+}
+
 DEFINES += QT_DEPRECATED_WARNINGS
 
 QT += core \
@@ -23,6 +28,9 @@ QT += core \
     widgets
 
 # Input
-HEADERS += src/*.h
-SOURCES += src/*.cpp
+HEADERS += src/SingleApplication.h \
+    src/resource.h \
+    src/TransparentMainWindow.h
+SOURCES += src/SingleApplication.cpp \
+    src/main.cpp
 RESOURCES += src/Resource.qrc
