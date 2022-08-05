@@ -28,7 +28,7 @@ jobs:
             msvc_arch: x64
             qt_arch_install: msvc2019_64
     env:
-      targetName: ppin
+      targetName: ppin.exe
     # 步骤
     steps:
       # 安装Qt
@@ -44,12 +44,13 @@ jobs:
           cached: 'false'
           aqtversion: '==2.0.5'
       # 拉取代码
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
           submodules: 'true'
           fetch-depth: 1
       # msvc编译
-      - name: msvc-build
+      - name: Build Windows
         id: build
         shell: cmd
         run: |
@@ -61,25 +62,26 @@ jobs:
           echo vcToolsInstallDir=%VCToolsInstallDir% >> %GITHUB_ENV%
           echo vcToolsRedistDir=%VCToolsRedistDir% >> %GITHUB_ENV%
       # 打包
-      - name: package
+      - name: Package
         id: package
         env:
-          archiveName: ${{ env.targetName }}_${{ matrix.os }}_${{ matrix.msvc_arch }}
+          archiveName: ppin_${{ matrix.os }}_${{ matrix.msvc_arch }}
           msvcArch: ${{ matrix.msvc_arch }}
         shell: pwsh
         run: |
-          & scripts\windows-publish.ps1 ${env:archiveName} ${env:targetName}.exe
+          & scripts\windows-publish.ps1 ${env:archiveName} ${env:targetName}
           # 记录packageName给后续step
            $name = ${env:archiveName}
            echo "::set-output name=packageName::$name"
       # tag 查询github-Release
       # 上传artifacts
-      - uses: actions/upload-artifact@v2
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.package.outputs.packageName }}
           path: ${{ steps.package.outputs.packageName }}
       # tag 上传Release
-      - name: uploadRelease
+      - name: Upload Release
         if: startsWith(github.event.ref, 'refs/tags/')
         uses: svenstaro/upload-release-action@v2
         with:
