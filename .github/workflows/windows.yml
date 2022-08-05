@@ -73,6 +73,7 @@ jobs:
           # 记录packageName给后续step
            $name = ${env:archiveName}
            echo "::set-output name=packageName::$name"
+           echo "::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}"
       # tag 查询github-Release
       # 上传artifacts
       - name: Upload Artifacts
@@ -87,6 +88,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ steps.package.outputs.packageName }}.zip
-          asset_name: ${{ steps.package.outputs.packageName }}_${{ github.ref }}.zip
+          asset_name: ${{ steps.package.outputs.packageName }}_${{ steps.package.outputs.VERSION }}.zip
           tag: ${{ github.ref }}
           overwrite: true
