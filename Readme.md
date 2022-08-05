@@ -16,6 +16,7 @@
 [commit-activity:badge]: https://img.shields.io/github/commit-activity/m/Ohto-Ai/ppin?logo=github
 [repository]: https://github.com/Ohto-Ai/ppin
 
+[![Ubuntu CI](https://github.com/Ohto-Ai/ppin/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/Ohto-Ai/ppin/actions/workflows/ubuntu.yml)  
 [![License][license:badge]](/LICENSE)
 [![Issues][issues:badge]][issues]  
 [![Stargazers][stargazers:badge]][stargazers]
