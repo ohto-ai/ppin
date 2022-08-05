@@ -14,6 +14,12 @@ int main(int argc,  char**argv)
 	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 	SingleApplication a(argc, argv);
 
+    a.setApplicationName("ppin");
+    a.setDesktopFileName("ppin");
+    a.setApplicationVersion("0.1.1");
+    a.setOrganizationName("ohtoai");
+    a.setOrganizationDomain("ohtoai.top");
+
 	if (a.instanceRunning())
 		return 0;
 
