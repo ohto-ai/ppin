@@ -1,0 +1,43 @@
+name: Android CI
+on:
+  push:
+    paths:
+      - '*.pro'
+      - 'src/**'
+      - '.github/workflows/android.yml'
+  pull_request:
+    paths:
+      - '*.pro'
+      - 'src/**'
+      - '.github/workflows/android.yml'
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - qt_ver: 5.15.2
+            # here no qt_arch, use default
+            os: ubuntu-20.04
+            qt_target: android
+    steps:
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        if: ${{ matrix.qt_ver == '5.15.2' }}
+        with:
+          version: ${{ matrix.qt_ver }}
+          target: ${{ matrix.qt_target }}
+          # here need not arch
+          # arch: ${{ matrix.qt_arch }}
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+          fetch-depth: 1
+      - name: Build Android
+        run: |
+          export ANDROID_SDK_ROOT=$ANDROID_HOME
+          export ANDROID_NDK_ROOT=$ANDROID_HOME/ndk-bundle
+          qmake
+          make
