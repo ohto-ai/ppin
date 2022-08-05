@@ -7,7 +7,6 @@ TARGET = ppin
 INCLUDEPATH += .
 
 CONFIG += c++17
-QMAKE_CXXFLAGS += -std=c++17
 
 OBJECTS_DIR = build/obj/
 MOC_DIR = build/
