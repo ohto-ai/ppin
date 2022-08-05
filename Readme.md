@@ -16,7 +16,23 @@
 [commit-activity:badge]: https://img.shields.io/github/commit-activity/m/Ohto-Ai/ppin?logo=github
 [repository]: https://github.com/Ohto-Ai/ppin
 
-[![Ubuntu CI](https://github.com/Ohto-Ai/ppin/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/Ohto-Ai/ppin/actions/workflows/ubuntu.yml)  
+
+[win-link]: https://github.com/Ohto-Ai/ppin/actions/workflows/windows.yml "WindowsAction"
+[win-badge]: https://github.com/Ohto-Ai/ppin/actions/workflows/windows.yml/badge.svg  "Windows"
+
+[ubuntu-link]: https://github.com/Ohto-Ai/ppin/actions/workflows/ubuntu.yml "UbuntuAction"
+[ubuntu-badge]: https://github.com/Ohto-Ai/ppin/actions/workflows/ubuntu.yml/badge.svg "Ubuntu"
+
+[macos-link]: https://github.com/Ohto-Ai/ppin/actions/workflows/macos.yml "MacOSAction"
+[macos-badge]: https://github.com/Ohto-Ai/ppin/actions/workflows/macos.yml/badge.svg "MacOS"
+
+[ios-link]: https://github.com/Ohto-Ai/ppin/actions/workflows/ios.yml "IOSAction"
+[ios-badge]: https://github.com/Ohto-Ai/ppin/actions/workflows/ios.yml/badge.svg "IOS"
+
+| [Windows][win-link]| [Ubuntu][ubuntu-link]|[MacOS][macos-link]|[IOS][ios-link]|
+|---------------|---------------|-----------------|-----------------|----------------|
+| ![win-badge]  | ![ubuntu-badge]      | ![macos-badge]   |![ios-badge]   |
+
 [![License][license:badge]](/LICENSE)
 [![Issues][issues:badge]][issues]  
 [![Stargazers][stargazers:badge]][stargazers]
