@@ -28,8 +28,10 @@ jobs:
           version: ${{ matrix.qt_ver }}
           # Target platform for build
           target: ${{ matrix.qt_target }}
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
+          submodules: 'true'
           fetch-depth: 1
       - name: Build ios
         run: |
