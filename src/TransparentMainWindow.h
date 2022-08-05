@@ -205,15 +205,15 @@ public:
 		if (!isPositionLocked && QGuiApplication::keyboardModifiers() == Qt::CTRL)
 		{
 			auto index = currentScalePercentIndex;
-			index += event->delta() / 120;
+			index += event->angleDelta().y() / 120;
 			if (index < 0)
 				index = 0;
-			else if (index >= ScalePercentByIndex.size())
+			else if (index >= static_cast<int>(ScalePercentByIndex.size()))
 				index = ScalePercentByIndex.size() - 1;
 
 			if (index != currentScalePercentIndex)
 			{
-				auto posOffset = (event->globalPos() - frameGeometry().topLeft())
+				auto posOffset = (event->globalPosition().toPoint() - frameGeometry().topLeft())
 					* (ScalePercentByIndex[currentScalePercentIndex] - ScalePercentByIndex[index])
 					/ ScalePercentByIndex[currentScalePercentIndex];
 				currentScalePercentIndex = index;
