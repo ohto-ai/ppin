@@ -182,6 +182,13 @@
     <ClCompile Include="src\SingleApplication.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\ppin.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\main\pin.ico" />
+    <Image Include="res\main\pin.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />

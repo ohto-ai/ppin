@@ -33,3 +33,4 @@ HEADERS += src/SingleApplication.h \
 SOURCES += src/SingleApplication.cpp \
     src/main.cpp
 RESOURCES += src/Resource.qrc
+RC_FILE += src/ppin.rc

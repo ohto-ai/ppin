@@ -1,4 +1,4 @@
-﻿#define IDI_MAINICON                    101
+﻿#define IDI_MAIN                        101
 
 // Next default values for new objects
 // 
