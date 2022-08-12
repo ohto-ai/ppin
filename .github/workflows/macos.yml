@@ -43,27 +43,27 @@ jobs:
         run: |
           qmake
           make
-      # 打包
-      - name: Package
-        id: package
-        run: |
-          # 拷贝依赖
-          macdeployqt bin/release/${targetName}.app -qmldir=. -verbose=1 -dmg
-          tag_ref="${{ github.ref }}"
-          echo "::set-output name=tagName::${tag_ref/refs\/tags\//}"
-      # 上传artifacts
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.targetName }}_${{ matrix.os }}.zip
-          path: bin/release/${{ env.targetName }}.app
-      # tag 上传Release
-      - name: Upload Release
-        if: startsWith(github.event.ref, 'refs/tags/v')
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: bin/release/${{ env.targetName }}.dmg
-          asset_name: ${{ env.targetName }}_${{ matrix.os }}_${{ steps.package.outputs.tagName }}.dmg
-          tag: ${{ github.ref }}
-          overwrite: true
+      # # 打包
+      # - name: Package
+      #   id: package
+      #   run: |
+      #     # 拷贝依赖
+      #     macdeployqt bin/release/${targetName}.app -qmldir=. -verbose=1 -dmg
+      #     tag_ref="${{ github.ref }}"
+      #     echo "::set-output name=tagName::${tag_ref/refs\/tags\//}"
+      # # 上传artifacts
+      # - name: Upload Artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ env.targetName }}_${{ matrix.os }}.zip
+      #     path: bin/release/${{ env.targetName }}.app
+      # # tag 上传Release
+      # - name: Upload Release
+      #   if: startsWith(github.event.ref, 'refs/tags/v')
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     file: bin/release/${{ env.targetName }}.dmg
+      #     asset_name: ${{ env.targetName }}_${{ matrix.os }}_${{ steps.package.outputs.tagName }}.dmg
+      #     tag: ${{ github.ref }}
+      #     overwrite: true
