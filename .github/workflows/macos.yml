@@ -42,7 +42,7 @@ jobs:
       - name: Build MacOS
         run: |
           qmake
-          make
+          make -j8
       # # 打包
       # - name: Package
       #   id: package

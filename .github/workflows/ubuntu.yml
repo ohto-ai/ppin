@@ -36,3 +36,4 @@ jobs:
       run: |
         qmake
         make -j8
+
