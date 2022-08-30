@@ -1,5 +1,7 @@
 # ppin
 
+跨平台的钉图工具
+
 [circleci]: https://app.circleci.com/pipelines/github/Ohto-Ai/ppin
 [issues]: https://github.com/Ohto-Ai/ppin/issues
 [stargazers]: https://github.com/Ohto-Ai/ppin/stargazers
