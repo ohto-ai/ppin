@@ -213,7 +213,7 @@ public:
 
 			if (index != currentScalePercentIndex)
 			{
-				auto posOffset = (event->globalPosition().toPoint() - frameGeometry().topLeft())
+				auto posOffset = (event->globalPos() - frameGeometry().topLeft())
 					* (ScalePercentByIndex[currentScalePercentIndex] - ScalePercentByIndex[index])
 					/ ScalePercentByIndex[currentScalePercentIndex];
 				currentScalePercentIndex = index;
