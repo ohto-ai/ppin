@@ -66,5 +66,3 @@ This project is licensed under the terms of the [MIT License](/LICENSE).
 
 [![Email](https://img.shields.io/badge/mail-zhu.thatboy@outlook.com-blue.svg?&style=for-the-badge)](mailto:zhu.thatboy@outlook.com?subject=Feedback&body=This%20is%20a%20test%20feedback.)
 
-## Special Thanks
-
