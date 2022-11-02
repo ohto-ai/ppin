@@ -15,7 +15,6 @@ public:
 signals:
 	void newInstanceStartup(QStringList commandLine);	// New instance startup
 private:
-
 	void initLocalConnection();		// Initialize the local connection	
 	void createLocalServer();		// Creating a Server
 	bool isInstanceRunning;			// Whether an instance is already running
