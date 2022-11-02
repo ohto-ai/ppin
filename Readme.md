@@ -35,6 +35,8 @@
 |---------------|---------------|-----------------|-----------------|
 | ![win-badge]  | ![ubuntu-badge] | ![macos-badge]   |![ios-badge]   |
 
+[![CodeFactor](https://www.codefactor.io/repository/github/ohto-ai/ppin/badge)](https://www.codefactor.io/repository/github/ohto-ai/ppin)
+
 [![License][license:badge]](/LICENSE)
 [![Issues][issues:badge]][issues]  
 [![Stargazers][stargazers:badge]][stargazers]
