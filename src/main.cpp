@@ -16,7 +16,7 @@ int main(int argc,  char**argv)
 
     a.setApplicationName("ppin");
     a.setDesktopFileName("ppin");
-    a.setApplicationVersion("0.2.0");
+    a.setApplicationVersion("0.2.1");
     a.setOrganizationName("ohtoai");
     a.setOrganizationDomain("ohtoai.top");
 
