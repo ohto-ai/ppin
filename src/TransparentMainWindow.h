@@ -24,8 +24,7 @@ public:
 		: QMainWindow{parent}
 	{
 		setCentralWidget(&mainLabel);
-		setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
-		setAttribute(Qt::WA_TranslucentBackground);
+		setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::SplashScreen);
 		mainLabel.setAlignment(Qt::AlignCenter);
 		mainLabel.setMovie(&windowMovie);
 
@@ -174,11 +173,6 @@ public:
 
 	void mousePressEvent(QMouseEvent* event) override
 	{
-		if (click_through)
-		{
-            event->ignore();
-            return;
-        }
 		if (event->button() == Qt::LeftButton)
 		{
 			onDragging = true;
@@ -190,11 +184,6 @@ public:
 	}
 	void mouseMoveEvent(QMouseEvent* event) override
 	{
-		if (click_through)
-		{
-			event->ignore();
-			return;
-		}
 		if (event->buttons() & Qt::LeftButton)
 		{
 			if (onDragging && !isPositionLocked)
@@ -207,22 +196,12 @@ public:
 	}
 	void mouseReleaseEvent(QMouseEvent* event) override
 	{
-		if (click_through)
-		{
-			event->ignore();
-			return;
-		}
 		onDragging = false;
 		setCursor(Qt::ArrowCursor);
 		QMainWindow::mouseReleaseEvent(event);
 	}
 	void wheelEvent(QWheelEvent* event) override
 	{
-		if (click_through)
-		{
-			event->ignore();
-			return;
-		}
 		if (!isPositionLocked && QGuiApplication::keyboardModifiers() == Qt::CTRL)
 		{
 			auto index = currentScalePercentIndex;
@@ -257,7 +236,11 @@ public:
 	void setClickThrough(bool b = true)
 	{
 		click_through = b;
-		setAttribute(Qt::WA_TransparentForMouseEvents, click_through);
+		if(click_through)
+			setWindowFlags(windowFlags() | Qt::WindowTransparentForInput);
+		else
+			setWindowFlags(windowFlags() & ~Qt::WindowTransparentForInput);
+		show();
 	}
 
 	bool clickThrough() const
