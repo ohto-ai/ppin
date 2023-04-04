@@ -13,5 +13,7 @@
         <file>../res/button/error.png</file>
         <file>../res/button/capture.png</file>
         <file>../res/button/demo.png</file>
+        <file>../res/button/mouse.png</file>
+        <file>../res/button/mouse_disable.png</file>
     </qresource>
 </RCC>
