@@ -16,7 +16,7 @@ int main(int argc,  char**argv)
 
     a.setApplicationName("ppin");
     a.setDesktopFileName("ppin");
-    a.setApplicationVersion("0.1.1");
+    a.setApplicationVersion("0.2.0");
     a.setOrganizationName("ohtoai");
     a.setOrganizationDomain("ohtoai.top");
 
@@ -151,6 +151,31 @@ int main(int argc,  char**argv)
 	systemTrayMenu.addAction(QIcon(":/icon/res/button/clipboard.png"), "&From Clipboard", [&]
 		{
 			createPinWindowByMimeData(qApp->clipboard()->mimeData());
+		});
+
+	systemTrayMenu.addAction(QIcon(":/icon/res/button/mouse_disable.png"), "Enable Click Through", [&]
+		{
+			auto& children = mainWindow.children();
+			for (auto children : children)
+			{
+				if (auto window = dynamic_cast<TransparentMainWindow*>(children))
+				{
+					window->setClickThrough();
+				}
+			}
+		});
+
+	systemTrayMenu.addAction(QIcon(":/icon/res/button/mouse.png"), "Disable Click Through", [&]
+		{
+			auto& children = mainWindow.children();
+
+			for (auto children : children)
+			{
+				if (auto window = dynamic_cast<TransparentMainWindow*>(children))
+				{
+					window->setClickThrough(false);
+				}
+			}
 		});
 
 	systemTrayMenu.addAction(QIcon(":/icon/res/button/close.png"), "&Close All", [&]

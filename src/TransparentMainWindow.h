@@ -166,6 +166,7 @@ public:
 		if (success)
 			event->acceptProposedAction();
 	}
+	
 	void dropEvent(QDropEvent* event) override
 	{
 		emit cloneWindow(event->mimeData());
@@ -173,6 +174,11 @@ public:
 
 	void mousePressEvent(QMouseEvent* event) override
 	{
+		if (click_through)
+		{
+            event->ignore();
+            return;
+        }
 		if (event->button() == Qt::LeftButton)
 		{
 			onDragging = true;
@@ -184,6 +190,11 @@ public:
 	}
 	void mouseMoveEvent(QMouseEvent* event) override
 	{
+		if (click_through)
+		{
+			event->ignore();
+			return;
+		}
 		if (event->buttons() & Qt::LeftButton)
 		{
 			if (onDragging && !isPositionLocked)
@@ -196,12 +207,22 @@ public:
 	}
 	void mouseReleaseEvent(QMouseEvent* event) override
 	{
+		if (click_through)
+		{
+			event->ignore();
+			return;
+		}
 		onDragging = false;
 		setCursor(Qt::ArrowCursor);
 		QMainWindow::mouseReleaseEvent(event);
 	}
 	void wheelEvent(QWheelEvent* event) override
 	{
+		if (click_through)
+		{
+			event->ignore();
+			return;
+		}
 		if (!isPositionLocked && QGuiApplication::keyboardModifiers() == Qt::CTRL)
 		{
 			auto index = currentScalePercentIndex;
@@ -233,6 +254,17 @@ public:
 		QMainWindow::closeEvent(event);
 	}
 
+	void setClickThrough(bool b = true)
+	{
+		click_through = b;
+		setAttribute(Qt::WA_TransparentForMouseEvents, click_through);
+	}
+
+	bool clickThrough() const
+	{
+		return click_through;
+	}
+
 signals:
 	void cloneWindow(QByteArray) const;
 	void cloneWindow(const QMimeData*) const;
@@ -257,5 +289,6 @@ private:
 
 	QByteArray imageByteArray;
 	QBuffer deviceBuffer{ &imageByteArray, this };
+	bool click_through{ false };
 };
 
