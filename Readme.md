@@ -28,12 +28,9 @@
 [macos-link]: https://github.com/Ohto-Ai/ppin/actions/workflows/macos.yml "MacOSAction"
 [macos-badge]: https://github.com/Ohto-Ai/ppin/actions/workflows/macos.yml/badge.svg "MacOS"
 
-[ios-link]: https://github.com/Ohto-Ai/ppin/actions/workflows/ios.yml "IOSAction"
-[ios-badge]: https://github.com/Ohto-Ai/ppin/actions/workflows/ios.yml/badge.svg "IOS"
-
-| [Windows][win-link]| [Ubuntu][ubuntu-link]|[MacOS][macos-link]|[IOS][ios-link]|
-|---------------|---------------|-----------------|-----------------|
-| ![win-badge]  | ![ubuntu-badge] | ![macos-badge]   |![ios-badge]   |
+| [Windows][win-link]| [Ubuntu][ubuntu-link]|[MacOS][macos-link]|
+|---------------|---------------|-----------------|
+| ![win-badge]  | ![ubuntu-badge] | ![macos-badge]   |
 
 [![CodeFactor](https://www.codefactor.io/repository/github/ohto-ai/ppin/badge)](https://www.codefactor.io/repository/github/ohto-ai/ppin)
 
