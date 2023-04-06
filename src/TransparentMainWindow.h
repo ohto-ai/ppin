@@ -25,6 +25,7 @@ public:
 	{
 		setCentralWidget(&mainLabel);
 		setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::SplashScreen);
+		setAttribute(Qt::WA_TranslucentBackground);
 		mainLabel.setAlignment(Qt::AlignCenter);
 		mainLabel.setMovie(&windowMovie);
 

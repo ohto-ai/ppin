@@ -25,7 +25,7 @@ int main(int argc,  char**argv)
 
 	auto appIcon = QIcon(":/icon/MainIcon");
 
-	QList<TransparentMainWindow*> windows;
+	QMainWindow mainWindow;
 
 	qApp->setWindowIcon(appIcon);
 	QSystemTrayIcon systemTray;
@@ -57,8 +57,7 @@ int main(int argc,  char**argv)
 
 	createPinWindow = [&](QByteArray data)->TransparentMainWindow*
 	{
-		auto w = new TransparentMainWindow;
-		windows.append(w);
+		auto w = new TransparentMainWindow(&mainWindow);
 		w->show();
 		if (!w->loadMovie(data))
 		{
@@ -71,8 +70,7 @@ int main(int argc,  char**argv)
 	};
 	createPinWindowByFile = [&](QString fileName)->TransparentMainWindow*
 	{
-		auto w = new TransparentMainWindow;
-		windows.append(w);
+		auto w = new TransparentMainWindow(&mainWindow);
 		w->show();
 		if(!w->loadMovie(fileName))
 		{
@@ -86,8 +84,7 @@ int main(int argc,  char**argv)
 	};
 	createPinWindowByImage = [&](QImage image)
 	{
-		auto w = new TransparentMainWindow;
-		windows.append(w);
+		auto w = new TransparentMainWindow(&mainWindow);
 		w->show();
 		w->loadMovie(image);
 		QObject::connect(w, static_cast<void(TransparentMainWindow::*)(QByteArray)const>(&TransparentMainWindow::cloneWindow), createPinWindow);
@@ -158,25 +155,38 @@ int main(int argc,  char**argv)
 
 	systemTrayMenu.addAction(QIcon(":/icon/res/button/mouse_disable.png"), "Enable Click Through", [&]
 		{
-			for (auto window : windows)
+			auto& children = mainWindow.children();
+			for (auto children : children)
 			{
-				window->setClickThrough(true);
-			}
+				if (auto window = dynamic_cast<TransparentMainWindow*>(children))
+				{
+                    window->setClickThrough(true);
+                }
+            }
 		});
 
 	systemTrayMenu.addAction(QIcon(":/icon/res/button/mouse.png"), "Disable Click Through", [&]
 		{
-			for (auto window : windows)
+			auto& children = mainWindow.children();
+			for (auto children : children)
 			{
-				window->setClickThrough(false);
+				if (auto window = dynamic_cast<TransparentMainWindow*>(children))
+				{
+					window->setClickThrough(false);
+				}
 			}
 		});
 
 	systemTrayMenu.addAction(QIcon(":/icon/res/button/close.png"), "&Close All", [&]
 		{
-			for (auto window : windows)
+			auto& children = mainWindow.children();
+			for (auto children : children)
 			{
-				window->close();
+				if (auto window = dynamic_cast<TransparentMainWindow*>(children))
+				{
+					window->close();
+					window->deleteLater();
+				}
 			}
 		});
 
